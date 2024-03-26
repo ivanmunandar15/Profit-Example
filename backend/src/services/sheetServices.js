@@ -1,47 +1,69 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function createProduct(name) {
-    return await prisma.product.create({
-        data: {
-            name: name
-        }
-    });
+const getProducts = async () => {
+    try {
+        return prisma.product.findMany();
+    } catch (error) {
+        throw new Error(`Error in getProducts: ${error.message}`);
+    }
 }
 
-async function getProduct(id) {
-    return await prisma.product.findUnique({
-        where: {
-            id: id
-        },
-        select: {
-            name: true
-        }
-    });
+const getProductById = async (id) => {
+    try {
+        return prisma.product.findUnique({
+            where: {
+                id: Number(id),
+            },
+        });
+    } catch (error) {
+        throw new Error(`Error in getProductById: ${error.message}`);
+    }
 }
 
-async function updateProduct(id, newName) {
-    return await prisma.product.update({
-        where: {
-            id: id
-        },
-        data: {
-            name: newName
-        }
-    });
+const createProduct = async (name) => {
+    try {
+        return prisma.product.create({
+            data: {
+                name: name,
+            },
+        });
+    } catch (error) {
+        throw new Error(`Error in createProduct: ${error.message}`);
+    }
 }
 
-async function deleteProduct(id) {
-    return await prisma.product.delete({
-        where: {
-            id: id
-        }
-    });
+const updateProduct = async (id, name) => {
+    try {
+        return prisma.product.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                name: name,
+            },
+        });
+    } catch (error) {
+        throw new Error(`Error in updateProduct: ${error.message}`);
+    }
+}
+
+const deleteProduct = async (id) => {
+    try {
+        return prisma.product.delete({
+            where: {
+                id: Number(id),
+            },
+        });
+    } catch (error) {
+        throw new Error(`Error in deleteProduct: ${error.message}`);
+    }
 }
 
 module.exports = {
+    getProducts,
+    getProductById,
     createProduct,
-    getProduct,
     updateProduct,
     deleteProduct
 };

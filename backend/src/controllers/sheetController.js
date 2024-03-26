@@ -1,52 +1,62 @@
-const sheetServices = require('../services/sheetServices');
+const sheetService = require('../services/sheetServices');
 
-async function createProduct(req, res) {
+const getProducts = async (req, res) => {
     try {
-        const { name } = req.body;
-        const product = await sheetServices.createProduct(name);
-        res.json(product);
+        const products = await sheetService.getProducts();
+        res.json(products);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
-async function getProduct(req, res) {
+const getProductById = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        const product = await sheetServices.getProduct(id);
+        const { id } = req.params;
+        const product = await sheetService.getProductById(id);
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
         res.json(product);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
-async function updateProduct(req, res) {
+const createProduct = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
         const { name } = req.body;
-        const updatedProduct = await sheetServices.updateProduct(id, name);
+        const product = await sheetService.createProduct(name);
+        res.status(201).json(product);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        const updatedProduct = await sheetService.updateProduct(id, name);
         res.json(updatedProduct);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
-async function deleteProduct(req, res) {
+const deleteProduct = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        const deletedProduct = await sheetServices.deleteProduct(id);
-        res.json(deletedProduct);
+        const { id } = req.params;
+        await sheetService.deleteProduct(id);
+        res.sendStatus(204);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
 module.exports = {
+    getProducts,
+    getProductById,
     createProduct,
-    getProduct,
     updateProduct,
     deleteProduct
 };
