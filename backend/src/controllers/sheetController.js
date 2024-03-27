@@ -1,52 +1,59 @@
-const sheetServices = require('../services/sheetServices');
+const productService = require('../services/sheetServices');
+const { successResponse, errorResponse } = require('../helpers/web/webResponses');
 
-async function createProduct(req, res) {
+const productController = {
+  async getProducts(req, res) {
     try {
-        const { name } = req.body;
-        const product = await sheetServices.createProduct(name);
-        res.json(product);
+      const products = await productService.getProducts();
+      res.json(successResponse('Products retrieved successfully', products));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json(errorResponse('Internal Server Error'));
     }
-}
+  },
 
-async function getProduct(req, res) {
+  async getProductById(req, res) {
+    const { id } = req.params;
     try {
-        const id = parseInt(req.params.id);
-        const product = await sheetServices.getProduct(id);
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-        res.json(product);
+      const product = await productService.getProductById(id);
+      if (!product) {
+        return res.status(404).json(errorResponse('Product not found'));
+      }
+      res.json(successResponse('Product retrieved successfully', product));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json(errorResponse('Internal Server Error'));
     }
-}
+  },
 
-async function updateProduct(req, res) {
+  async createProduct(req, res) {
+    const data = req.body;
     try {
-        const id = parseInt(req.params.id);
-        const { name } = req.body;
-        const updatedProduct = await sheetServices.updateProduct(id, name);
-        res.json(updatedProduct);
+      const product = await productService.createProduct(data);
+      res.status(201).json(successResponse('Product created successfully', product));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json(errorResponse('Internal Server Error'));
     }
-}
+  },
 
-async function deleteProduct(req, res) {
+  async updateProduct(req, res) {
+    const { id } = req.params;
+    const data = req.body;
     try {
-        const id = parseInt(req.params.id);
-        const deletedProduct = await sheetServices.deleteProduct(id);
-        res.json(deletedProduct);
+      const product = await productService.updateProduct(id, data);
+      res.json(successResponse('Product updated successfully', product));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json(errorResponse('Internal Server Error'));
     }
-}
+  },
 
-module.exports = {
-    createProduct,
-    getProduct,
-    updateProduct,
-    deleteProduct
+  async deleteProduct(req, res) {
+    const { id } = req.params;
+    try {
+      await productService.deleteProduct(id);
+      res.json(successResponse('Product deleted successfully'));
+    } catch (error) {
+      res.status(500).json(errorResponse('Internal Server Error'));
+    }
+  },
 };
+
+module.exports = productController;

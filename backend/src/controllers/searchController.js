@@ -1,4 +1,5 @@
 const searchService = require('../services/searchServices');
+const { successResponse, errorResponse } = require('../helpers/web/webResponses');
 
 module.exports = {
     search: async (req, res) => {
@@ -6,10 +7,10 @@ module.exports = {
 
         try {
             const searchResults = await searchService.search(query);
-            res.json(searchResults);
+            res.json(successResponse('Search results retrieved successfully', searchResults));
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json(errorResponse('Internal server error'));
         }
     }
 };

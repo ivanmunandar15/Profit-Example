@@ -1,47 +1,67 @@
+// productService.js
+
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
-async function createProduct(name) {
-    return await prisma.product.create({
-        data: {
-            name: name
-        }
+const productService = {
+  async getProducts() {
+    return await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
     });
-}
+  },
 
-async function getProduct(id) {
+  async getProductById(id) {
     return await prisma.product.findUnique({
-        where: {
-            id: id
-        },
-        select: {
-            name: true
-        }
+      where: {
+        id: parseInt(id),
+      },
+      select: {
+        id: true,
+        name: true,
+      },
     });
-}
+  },
 
-async function updateProduct(id, newName) {
+  async createProduct(data) {
+    return await prisma.product.create({
+      data: {
+        name: data.name,
+        // Add other fields as necessary
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  },
+
+  async updateProduct(id, data) {
     return await prisma.product.update({
-        where: {
-            id: id
-        },
-        data: {
-            name: newName
-        }
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        name: data.name,
+        // Add other fields as necessary
+      },
+      select: {
+        id: true,
+        name: true,
+      },
     });
-}
+  },
 
-async function deleteProduct(id) {
+  async deleteProduct(id) {
     return await prisma.product.delete({
-        where: {
-            id: id
-        }
+      where: {
+        id: parseInt(id),
+      },
     });
-}
-
-module.exports = {
-    createProduct,
-    getProduct,
-    updateProduct,
-    deleteProduct
+  },
 };
+
+module.exports = productService;

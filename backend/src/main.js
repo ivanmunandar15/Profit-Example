@@ -21,7 +21,7 @@ main.use(bodyParser.urlencoded ({
 // Use route
 main.use(authRouter);
 main.use('/search', searchRoute);
-main.use('/api', sheetRoute);
+main.use('/sheet', sheetRoute);
 
 // server
 const PORT = process.env.APP_PORT || 3000;
